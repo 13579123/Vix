@@ -9,6 +9,8 @@ import watch from "./vix/watch";
 import {patch} from "./vnode/patch";
 import extend from "./util/extend";
 import component from "./util/component";
+import mixin, {VIX_GLOBAL_MIXIN} from "./core/mixin";
+import mixedOption from "./util/mixedOption";
 
 export interface VixOption<T> {
   data?: T | (()=>T) ,
@@ -19,10 +21,10 @@ export interface VixOption<T> {
   computed?: {[key: string]: Computed<any>|(() => any)} ,
   components: {[key: string]: VixOption<any>} ,
 
-  beforeCreate?: Function,
-  created?: Function,
-  mounted?: Function,
-  beforeDestroy?: Function
+  beforeCreate?: Function|Function[],
+  created?: Function|Function[],
+  mounted?: Function|Function[],
+  beforeDestroy?: Function|Function[]
 }
 
 export default class Vix<T> {
@@ -32,6 +34,11 @@ export default class Vix<T> {
 
   // 异步函数
   public static nextTick: (call: any) => void = nextTick
+
+  // 全局混入
+  public static mixin (option: VixOption<any>) {
+    return mixin(option)
+  }
 
   // 创建子类
   public static extend<T>(options: VixOption<T>) {
@@ -54,13 +61,17 @@ export default class Vix<T> {
 
   public $render: RenderFunction
 
-  public readonly $option: VixOption<T> = null
+  public $option: VixOption<T> = null
 
   // 自己的组件
   public readonly $components: Map<string, new (...arg: any) => Vix<any>> = new Map
 
   constructor(option: VixOption<T>) {
+    // 混合所有的option
     this.$option = option
+    VIX_GLOBAL_MIXIN.forEach(mix => {
+      this.$option = mixedOption(mix , this.$option)
+    })
     init(this)
   }
 

@@ -44,8 +44,12 @@ function diffPatchChildren(el: Node, oldChildren: VirtualNode[], newChildren: Vi
     if (!hasOldNodeSet.has(oldChildren[oldIndex])) {
       // 组件需要调用生命周期
       if (oldChildren[oldIndex].componentSub) {
-        if (oldChildren[oldIndex].vix.$option.beforeDestroy)
-          oldChildren[oldIndex].vix.$option.beforeDestroy()
+        const beforeDestroy = oldChildren[oldIndex].vix.$option.beforeDestroy
+        if (beforeDestroy) {
+          if (beforeDestroy instanceof Array)
+            beforeDestroy.forEach(c => c.call(oldChildren[oldIndex].vix))
+          else beforeDestroy.call(oldChildren[oldIndex].vix)
+        }
       }
       el.removeChild(oldChildren[oldIndex].reallyNode)
     }
@@ -106,9 +110,17 @@ function diffPatch(oldNode: VirtualNode , newNode: VirtualNode): Node {
   else if (newNode.children.length > 0) // 老节点不存在子节点 新节点存在子节点
     // 添加所有节点
     newNode.children.forEach(c => el.appendChild(c.createElement()))
-  else if (oldNode.children.length > 0) // 老节点存在子节点 新节点不存在子节点
+  else if (oldNode.children.length > 0) {// 老节点存在子节点 新节点不存在子节点
     // 删除所有节点
+    if (oldNode.componentSub) { // 说明是组件
+      if (oldNode.vix.$option.beforeDestroy) {
+        if (oldNode.vix.$option.beforeDestroy instanceof Array)
+          oldNode.vix.$option.beforeDestroy.forEach(c => c.call(oldNode.vix))
+        else oldNode.vix.$option.beforeDestroy.call(oldNode.vix)
+      }
+    }
     oldNode.children.forEach(c => oldNode.reallyNode.removeChild(c.reallyNode))
+  }
 
   return el
 }
