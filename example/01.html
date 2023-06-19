@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="app" style="color: red">
+    <my-ul></my-ul>
+
+    <br>
+    <br>
+
+    <my-ul></my-ul>
+</div>
+</body>
+<script src="./../dist/vix.js"></script>
+<!--<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>-->
+<script>
+
+  // const Vix = Vue
+
+  Vix.component("my-ul" , {
+    template: `
+            <ul>
+                <li>{{ arr[0] }}</li>
+                <li>{{ arr[1] }}</li>
+                <li>{{ arr[2] }}</li>
+            </ul>
+          `,
+    data() {
+      const arr = [Math.random() * 15 , Math.random() * 15 , Math.random() * 15]
+      return { arr }
+    } ,
+    created() {
+      console.log('my ul')
+      setInterval(() => {
+        this.arr = [
+          Math.random() * 15 , Math.random() * 15 , Math.random() * 15
+        ]
+      } , 1000)
+    }
+  })
+
+  const vix = new Vix({
+    el: "#app" ,
+    data() {
+      return {
+        isTrue: true
+      }
+    } ,
+    components: {}
+  })
+
+</script>
+</html>
