@@ -11,12 +11,14 @@ import extend from "./util/extend";
 import component from "./util/component";
 import mixin, {VIX_GLOBAL_MIXIN} from "./core/mixin";
 import mixedOption from "./util/mixedOption";
+import set from "./core/set";
 
 export interface VixOption<T> {
   data?: T | (()=>T) ,
   el?: string|HTMLElement ,
   template?: string ,
   render?: RenderFunction ,
+  mixin?: VixOption<any>[] ,
   watch?: {[key: string]: WatchOption|((n: any,o: any) => void)},
   computed?: {[key: string]: Computed<any>|(() => any)} ,
   components: {[key: string]: VixOption<any>} ,
@@ -69,14 +71,18 @@ export default class Vix<T> {
   constructor(option: VixOption<T>) {
     // 混合所有的option
     this.$option = option
-    VIX_GLOBAL_MIXIN.forEach(mix => {
-      this.$option = mixedOption(mix , this.$option)
-    })
+    if (option.mixin)
+      option.mixin.forEach(mix => this.$option = mixedOption(mix , this.$option))
+    VIX_GLOBAL_MIXIN.forEach(mix => this.$option = mixedOption(mix , this.$option))
     init(this)
   }
 
+  public $set(obj: any , key: string , data: any) {
+    return set(this , obj , key , data)
+  }
+
   public $mount(el?: string|HTMLElement) {
-    mount(this , el)
+    return mount(this , el)
   }
 
   public $update(v_node: VirtualNode) {

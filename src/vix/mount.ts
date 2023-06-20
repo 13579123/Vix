@@ -4,6 +4,7 @@ import Vix from "../index";
 import compilerToRender from "../compiler/compilerToRender";
 import Watcher from "../observe/watcher";
 import {patch} from "../vnode/patch";
+import VirtualNode from "../vnode/virtualNode";
 
 export function mount<T>(vix: Vix<T> , el?: string|HTMLElement) {
   // 没有render的情况下去使用el或者template
@@ -33,9 +34,10 @@ export function mount<T>(vix: Vix<T> , el?: string|HTMLElement) {
     // 编译template
     vix.$render = compilerToRender(template)
   } else vix.$render = vix.$option.render
+  let virtualNode: VirtualNode;
   // 创建watcher 并且渲染一次
   new Watcher(vix , () => {
-    const virtualNode = vix.$render()
+    virtualNode = vix.$render()
     // 已经有被渲染过了
     if (vix.$virtualNode) vix.$el = <HTMLElement>patch(vix.$virtualNode , virtualNode)
     // 初次渲染 挂载到el上面
@@ -46,4 +48,5 @@ export function mount<T>(vix: Vix<T> , el?: string|HTMLElement) {
       )
     vix.$virtualNode = virtualNode
   })
+  return virtualNode
 }

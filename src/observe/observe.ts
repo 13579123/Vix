@@ -2,7 +2,7 @@ import Dep from "./dep";
 
 const HASE_OBSERVER_OBJECT: WeakMap<any , any> = new WeakMap()
 
-const OBJECT_DEP_SYMBOL = Symbol()
+export const OBJECT_DEP_SYMBOL = Symbol()
 
 function observeReactiveProperty(data: any) {
   for (const key in data) {

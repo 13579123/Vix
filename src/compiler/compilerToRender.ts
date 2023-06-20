@@ -13,7 +13,6 @@ export default function compilerToRender(template: string): RenderFunction {
   const ast: HTMLAst = compilerToAst(template)
   // 编译为js
   const code: string = compilerToJS(ast)
-  // console.log(code)
   // 转换为function
   const func = new Function(`with(arguments[0]) {
     return ${code}
@@ -21,8 +20,9 @@ export default function compilerToRender(template: string): RenderFunction {
   // 生成render
   return function () {
     const vix: Vix<any> = this
+    const ctx = Object.create(vix)
     return func.call(this , {
-      vix ,
+      ctx ,
       _g_value: (value: any) => {
         if (typeof value === "object") return JSON.stringify(value)
         return value

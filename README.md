@@ -26,8 +26,10 @@
     |___ computed.ts // 计算属性
     |___ watch.ts // 监视属性
     |___ mixin.ts // 全局混入
+    |___ set.ts // 添加数据到vix实例上
 |___ compiler // 编译模块
     |___ compilerToAst.ts // 将模板转换为AST语法树
     |___ compilerToJS.ts // 将ast语法树转换为js语法
     |___ compilerToRender.ts // 将模板转换为render函数
 ```
+

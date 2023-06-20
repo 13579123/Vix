@@ -61,9 +61,8 @@ export default class VirtualNode {
     }
     // 组件节点
     const sub = new this.componentSub()
-    sub.$mount()
-    sub.$virtualNode = this
-    this.reallyNode = sub.$render().createElement()
+    sub.$virtualNode = sub.$mount()
+    this.reallyNode = sub.$virtualNode.createElement()
     return this.reallyNode
   }
 

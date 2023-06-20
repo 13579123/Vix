@@ -72,12 +72,12 @@ function diffPatch(oldNode: VirtualNode , newNode: VirtualNode): Node {
   // 不是相同的节点直接替换
   if (!isSameVirtualNode(oldNode , newNode)) {
     const el = newNode.createElement()
-    oldNode.reallyNode.parentNode.replaceChild(el , oldNode.reallyNode)
+    const parent = oldNode.reallyNode.parentNode
+    parent.replaceChild(el , oldNode.reallyNode)
     return el
   }
   // 复用节点元素
-  const el: HTMLElement =
-    (<HTMLElement>newNode.reallyNode) = (<HTMLElement>oldNode.reallyNode)
+  const el: HTMLElement = (<HTMLElement>newNode.reallyNode) = (<HTMLElement>oldNode.reallyNode)
   // 可能是文本 我们需要比较文本内容
   if (oldNode.tag === "text") {
     if (oldNode.textValue !== newNode.textValue)
@@ -110,8 +110,8 @@ function diffPatch(oldNode: VirtualNode , newNode: VirtualNode): Node {
   else if (newNode.children.length > 0) // 老节点不存在子节点 新节点存在子节点
     // 添加所有节点
     newNode.children.forEach(c => el.appendChild(c.createElement()))
-  else if (oldNode.children.length > 0) {// 老节点存在子节点 新节点不存在子节点
-    // 删除所有节点
+  else if (oldNode.children.length > 0) {
+    // 老节点存在子节点 新节点不存在子节点 删除所有节点
     if (oldNode.componentSub) { // 说明是组件
       if (oldNode.vix.$option.beforeDestroy) {
         if (oldNode.vix.$option.beforeDestroy instanceof Array)

@@ -13,9 +13,8 @@ function compiler(token: HTMLAstToken): string {
       while (match = modelReg.exec(token.textValue)) {
         if (match.index > lastIndex) {
           tokens.push(JSON.stringify(value.slice(lastIndex, match.index))) // 切割普通字符串
-          // console.log(value.slice(lastIndex , match.index))
         }
-        tokens.push(`_g_value(vix.${match[1].trim()})`)
+        tokens.push(`_g_value(ctx.${match[1].trim()})`)
         lastIndex = match.index + match[0].length
       }
       tokens.push(JSON.stringify(value.slice(lastIndex)))
